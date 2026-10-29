@@ -21,6 +21,9 @@
   --white: #FFFFFF;
 
   --serif: 'Bodoni Moda', 'Didot', Georgia, serif;
+  /* Bodoni Moda gets very thin strokes at large sizes. A low "optical size"
+     keeps the strokes sturdy (6 = thickest, 96 = thinnest, the original look). */
+  --serif-opsz: 11;
   --sans: 'Manrope', system-ui, sans-serif;
 
   --max: 1440px;
@@ -224,4 +227,9 @@ p { margin: 0; }
   .js .veins path { stroke-dashoffset: 0; }
   .js [data-reveal].pre-reveal { opacity: 1; transform: none; }
   .material:hover .media img { transform: none; }
+}
+
+/* Sturdier Bodoni everywhere the serif font is used (see --serif-opsz above). */
+h1, h2, h3, .service .num, .review blockquote, .big-phone, .thanks {
+  font-variation-settings: 'opsz' var(--serif-opsz);
 }
