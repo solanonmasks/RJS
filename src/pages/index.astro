@@ -1,0 +1,309 @@
+---
+// Page markup. Content comes from src/data/site.js.
+import '../styles/global.css';
+import { site } from '../data/site.js';
+
+const canonical = new URL('/', Astro.site ?? site.url).href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: site.name,
+  url: site.url,
+  logo: site.logo,
+  image: site.hero.img,
+  telephone: '+1-' + site.phone,
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    addressCountry: site.address.country,
+  },
+  areaServed: site.areaServed.map((name) => ({ '@type': 'Place', name })),
+  sameAs: site.social.map((s) => s.href),
+};
+---
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{site.title}</title>
+  <meta name="description" content={site.description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="theme-color" content="#161514" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={site.name} />
+  <meta property="og:title" content={site.title} />
+  <meta property="og:description" content={site.description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={site.hero.img} />
+  <meta property="og:locale" content="en_CA" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={site.title} />
+  <meta name="twitter:description" content={site.description} />
+  <meta name="twitter:image" content={site.hero.img} />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <!-- Utility bar -->
+  <div id="top" class="utility">
+    <div class="wrap">
+      <span>{site.showroomLine}</span>
+      <span class="utility-links">
+        <a href={site.phoneHref} class="strong">{site.phone}</a>
+        <a href={'mailto:' + site.email}>{site.email}</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="wrap bar">
+      <a href="#top" class="logo"><img src={site.logo} alt={site.name} width="200" height="56" /></a>
+      <nav class="main-nav" aria-label="Main">
+        {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      </nav>
+      <div class="header-actions">
+        <a href="#quote" class="btn btn-dark header-cta">Request a quote</a>
+        <button type="button" class="menu-btn" aria-expanded="false" aria-controls="mobile-nav">
+          <span class="bars" aria-hidden="true"></span> Menu
+        </button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile">
+      {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      <a href="#quote">Request a quote</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <img class="hero-img" src={site.hero.img} alt={site.hero.imgAlt} fetchpriority="high" />
+      <div class="hero-shade"></div>
+      <!-- Champagne "vein" lines that draw across the photo -->
+      <svg class="veins" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+        <path class="v1" pathLength="1" stroke-width="1.4" d="M1000 40 C 820 120, 760 260, 620 300 S 380 420, 0 560" />
+        <path class="v2" pathLength="1" stroke-width="0.8" d="M1000 180 C 880 220, 840 330, 700 360 S 520 470, 360 600" />
+      </svg>
+      <div class="wrap hero-inner">
+        <p class="eyebrow" data-hero style="animation-delay:.4s">{site.hero.eyebrow}</p>
+        <h1 data-hero style="animation-delay:.54s">{site.hero.titleStart}<em>{site.hero.titleAccent}</em></h1>
+        <p class="hero-text" data-hero style="animation-delay:.68s">{site.hero.text}</p>
+        <div class="btn-row" data-hero style="animation-delay:.82s">
+          <a href="#quote" class="btn btn-champagne">Build my quote</a>
+          <a href={site.phoneHref} class="btn btn-outline">Call for a consultation</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Materials -->
+    <section id="materials" class="wrap section">
+      <div class="two-col mat-head">
+        <h2 class="h2" data-reveal>Choose your <em>surface.</em></h2>
+        <p data-reveal>{site.materialsIntro.text}</p>
+      </div>
+      <div class="materials">
+        {site.materials.map((m) => (
+          <article class="material" data-reveal>
+            <div class="media"><img src={m.img} alt={m.t} loading="lazy" /></div>
+            <h3>{m.t}</h3>
+            <p>{m.d}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Three ways to work with us -->
+    <section id="services" class="services">
+      <div class="wrap section two-col services-grid">
+        <div class="services-left">
+          <h2 class="h2" data-reveal>Three ways to <em>work with us.</em></h2>
+          <p data-reveal>{site.servicesIntro}</p>
+        </div>
+        <div>
+          {site.services.map((s) => (
+            <div class="service" data-reveal>
+              <span class="num">{s.n}</span>
+              <div class="service-body">
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Design process -->
+    <section id="process" class="wrap section process">
+      <h2 class="h2" data-reveal>Our design process.</h2>
+      <div class="steps">
+        {site.steps.map((s) => (
+          <div class="step" data-reveal>
+            <span class="label">Step {s.n}</span>
+            <h3>{s.t}</h3>
+            <p>{s.d}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section id="reviews" class="reviews">
+      <div class="wrap section">
+        <h2 class="h2" data-reveal>Can you find <em>the seams?</em></h2>
+        <div class="review-grid">
+          {site.reviews.map((r) => (
+            <figure class="review" data-reveal>
+              <blockquote>“{r.q}”</blockquote>
+              <figcaption>{r.n}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Quote -->
+    <section id="quote" class="wrap section two-col quote-grid">
+      <div class="quote-left">
+        <h2 class="h2-lg" data-reveal>Request a <em>quote.</em></h2>
+        <p data-reveal>{site.quote.text}</p>
+        <a data-reveal href={site.phoneHref} class="big-phone">{site.phone}</a>
+        <a data-reveal href={'mailto:' + site.quoteEmail} class="quote-email">{site.quoteEmail}</a>
+        <p data-reveal class="area">{site.quote.areaLine}</p>
+      </div>
+      <div>
+        <form class="form" id="quote-form" data-reveal data-endpoint={site.formEndpoint} enctype="multipart/form-data">
+          {site.quote.groups.map((g) => (
+            <fieldset class="chips-group">
+              <legend>{g.label}</legend>
+              <div class="chips">
+                {g.items.map((item) => (
+                  <label class="chip">
+                    <input type="radio" name={g.name} value={item} />
+                    <span>{item}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+          <div class="form-row">
+            <label class="field">Name<input name="name" autocomplete="name" required /></label>
+            <label class="field">Phone<input name="phone" type="tel" autocomplete="tel" required /></label>
+          </div>
+          <label class="field">Email<input name="email" type="email" autocomplete="email" required /></label>
+          <label class="field">{site.quote.fileLabel}<input name="attachments" type="file" multiple /></label>
+          <p class="form-error" role="alert" hidden>{site.quote.error}</p>
+          <button type="submit" class="btn btn-dark form-submit">{site.quote.submitLabel}</button>
+        </form>
+        <div class="thanks" id="form-thanks" role="status" hidden>{site.quote.thanks}</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <span class="foot-logo"><img src={site.logo} alt={site.name} loading="lazy" width="143" height="40" /></span>
+      <div class="social">
+        {site.social.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.label}</a>)}
+      </div>
+      <div class="foot-meta">
+        <span>© {new Date().getFullYear()} {site.name}</span>
+        <a href={site.credit.href} target="_blank" rel="noopener">{site.credit.label}</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sticky bottom bar (phones and tablets) -->
+  <div class="bottom-bar">
+    <a href={site.phoneHref} class="call">Call</a>
+    <a href="#quote" class="go">Quote</a>
+  </div>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Scroll reveal
+    const revealEls = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+    const showAll = () => revealEls.forEach((el) => { el.classList.remove('pre-reveal'); el.classList.add('revealed'); });
+    if (!reduce && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        let i = 0;
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target as HTMLElement;
+          const d = Math.min(i++, 5) * 0.08;
+          el.style.transitionDelay = `${d}s`;
+          el.classList.remove('pre-reveal');
+          el.classList.add('revealed');
+          io.unobserve(el);
+        });
+      }, { rootMargin: '0px 0px -8% 0px' });
+      revealEls.forEach((el) => {
+        if (el.getBoundingClientRect().top < window.innerHeight) return;
+        el.classList.add('pre-reveal');
+        io.observe(el);
+      });
+      setTimeout(showAll, 4000); // safety net
+    }
+
+    // Mobile menu
+    const menuBtn = document.querySelector<HTMLButtonElement>('.menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (menuBtn && mobileNav) {
+      const setOpen = (open: boolean) => {
+        menuBtn.setAttribute('aria-expanded', String(open));
+        mobileNav.classList.toggle('open', open);
+      };
+      menuBtn.addEventListener('click', () => setOpen(menuBtn.getAttribute('aria-expanded') !== 'true'));
+      mobileNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    }
+
+    // Quote form (chip groups are plain radio buttons, so one pick per group works without JS)
+    const form = document.getElementById('quote-form') as HTMLFormElement | null;
+    const thanks = document.getElementById('form-thanks');
+    if (form && thanks) {
+      const errorEl = form.querySelector<HTMLElement>('.form-error')!;
+      const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit')!;
+      const showThanks = () => { form.hidden = true; thanks.hidden = false; };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+        errorEl.hidden = true;
+        const endpoint = form.dataset.endpoint;
+        if (!endpoint) { showThanks(); return; }
+        submitBtn.disabled = true;
+        try {
+          // FormData sends as multipart, so attached files are included.
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' },
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          showThanks();
+        } catch {
+          errorEl.hidden = false;
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
